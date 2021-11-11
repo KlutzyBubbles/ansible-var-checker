@@ -1,0 +1,9 @@
+---
+- hosts: all
+  remote_user: root
+  tasks:
+    - name: Register shell
+      shell: test shell
+      register: shell
+    - name: Use shell
+      shell: test {{ shell }}

@@ -1,0 +1,10 @@
+---
+- hosts: all
+  remote_user: root
+  vars:
+    shell:
+      test: test
+      test1: test1
+  tasks:
+    - name: Use shell
+      shell: test shell

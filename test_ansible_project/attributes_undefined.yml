@@ -1,0 +1,14 @@
+---
+- hosts: all
+  remote_user: root
+  vars:
+    shell:
+      test: test
+      test1: test1
+      sub:
+        test: test
+  tasks:
+    - name: Use shell
+      shell: test {{ shell.test }} {{ shell.undefined }}
+    - name: Use shell
+      shell: test {{ shell.sub.test }} {{ shell.sub.undefined }}
