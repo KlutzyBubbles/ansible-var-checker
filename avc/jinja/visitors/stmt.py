@@ -7,7 +7,8 @@ from ..model import Scalar, Dictionary, List, Variable, Tuple
 from ..macro import Macro
 from ..mergers import merge, merge_many
 from ..exceptions import InvalidExpression
-from six import iteritems, zip, zip_longest
+from six import iteritems
+from six.moves import zip, zip_longest
 from .expr import Context, visit_expr
 from .util import visit_many
 
@@ -61,8 +62,8 @@ def visit_for(node, macroses=None, config=default_config, child_blocks=None):
             [body_struct.pop(item.name, Variable.from_node(node.target))
             for item in node.target.items])
     else:
-        target_struct = Variable.from_node(node.target)
-        # target_struct = body_struct.pop(node.target.name, Variable.from_node(node))
+        # target_struct = Variable.from_node(node.target)
+        target_struct = body_struct.pop(node.target.name, Variable.from_node(node))
 
     iter_rtype, iter_struct = visit_expr(
         node.iter,
@@ -78,10 +79,7 @@ def visit_for(node, macroses=None, config=default_config, child_blocks=None):
 
 @visits_stmt(nodes.If)
 def visit_if(node, macroses=None, config=default_config, child_blocks=None):
-    if config.BOOLEAN_CONDITIONS:
-        test_predicted_struct = Scalar.from_node(node.test)
-    else:
-        test_predicted_struct = Variable.from_node(node.test)
+    test_predicted_struct = Variable.from_node(node.test)
     test_rtype, test_struct = visit_expr(
             node.test, Context(predicted_struct=test_predicted_struct), macroses, config)
     if_struct = visit_many(node.body, macroses, config, predicted_struct_cls=Scalar)

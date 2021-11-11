@@ -139,6 +139,7 @@ def visit_expr(node, ctx, macroses=None, config=default_config):
     :returns: a tuple where the first element is an expression type (instance of :class:`Variable`)
               and the second element is an expression structure (instance of :class:`.model.Dictionary`)
     """
+    # print(node)
     visitor = expr_visitors.get(type(node))
     if not visitor:
         for node_cls, visitor_ in iteritems(expr_visitors):
@@ -221,12 +222,12 @@ def visit_name(node, ctx, macroses=None, config=default_config):
 
 @visits_expr(nodes.Getattr)
 def visit_getattr(node, ctx, macroses=None, config=default_config):
-    ctx = Context(
+    context = Context(
         ctx=ctx,
         predicted_struct=Dictionary.from_node(node, {
             node.attr: ctx.get_predicted_struct(label=node.attr),
         }))
-    test1, test2 = visit_expr(node.node, ctx, macroses, config=config)
+    test1, test2 = visit_expr(node.node, context, macroses, config=config)
     return test1, test2
 
 
@@ -313,12 +314,7 @@ def visit_concat(node, ctx, macroses=None, config=default_config):
 
 @visits_expr(nodes.CondExpr)
 def visit_cond_expr(node, ctx, macroses=None, config=default_config):
-    if config.BOOLEAN_CONDITIONS:
-        test_predicted_struct = Scalar.from_node(
-            node.test)
-    else:
-        test_predicted_struct = Variable.from_node(
-            node.test)
+    test_predicted_struct = Variable.from_node(node.test)
     test_rtype, test_struct = visit_expr(node.test, Context(predicted_struct=test_predicted_struct), macroses,
                                          config=config)
     if_rtype, if_struct = visit_expr(node.expr1, ctx, macroses, config=config)
@@ -488,17 +484,31 @@ def visit_filter(node, ctx, macroses=None, config=default_config):
         ), macroses, config=config)
         return rtype, struct
     elif node.name == 'default':
-        predicted_struct = merge(
-            Variable(), ctx.get_predicted_struct())
+        default_value_rtype, default_value_struct = visit_expr(
+            node.args[0],
+            Context(predicted_struct=Variable.from_node(node.args[0])),
+            macroses, config=config)
+        struct = merge(
+            ctx.get_predicted_struct(),
+            default_value_rtype,
+        )
+        struct.used_with_default = True
         rtype, struct = visit_expr(node.node, Context(
             return_struct_cls=Variable,
-            predicted_struct=predicted_struct
+            predicted_struct=struct
         ), macroses, config=config)
-        item_rtype, item_struct = visit_expr(node.args[0], Context(
-            predicted_struct=predicted_struct), macroses, config=config)
-        struct = merge(struct, item_struct)
-        struct.used_with_default = True
-        struct.value = item_rtype.value
+        # predicted_struct = merge(
+        #     Variable(), ctx.get_predicted_struct())
+        # rtype, struct = visit_expr(node.node, Context(
+        #     return_struct_cls=Variable,
+        #     predicted_struct=predicted_struct
+        # ), macroses, config=config)
+        # struct.used_with_default = True
+        # item_rtype, item_struct = visit_expr(node.args[0], Context(
+        #     predicted_struct=predicted_struct), macroses, config=config)
+        # struct = merge(struct, item_struct)
+        # print(item_rtype)
+        # struct.value = item_rtype.value
         return rtype, struct
     elif node.name == 'dictsort':
         ctx.meet(List(Tuple([Scalar(), Variable()])), node)

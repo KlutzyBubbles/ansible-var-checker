@@ -3,7 +3,6 @@ import pprint
 from jinja2 import nodes
 from six import iteritems, iterkeys
 
-
 class Variable(object):
     """A base variable class.
 

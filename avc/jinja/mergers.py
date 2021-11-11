@@ -2,8 +2,7 @@ import itertools
 
 from .model import Scalar, Dictionary, List, Variable, Tuple
 from .exceptions import MergeException
-from six import zip_longest
-
+from six.moves import zip_longest
 
 def merge(first, second, custom_merger=None):
     """Merges two variables.

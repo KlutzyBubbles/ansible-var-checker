@@ -17,13 +17,6 @@ class Config(object):
     being indexed with an integer.
     """
 
-    BOOLEAN_CONDITIONS = False
-    """Whether or not to consider conditions in ``if`` statements as boolean.
-
-    If this variable is not set, ``xs`` variable in template ``{% if xs %}{% endif %}`` will have
-    unknown structure. If this variable is set, ``xs`` will be a boolean.
-    """
-
     PACKAGE_NAME = ''
     """Name of the package where you want to load templates from.
 
@@ -49,7 +42,6 @@ class Config(object):
     def __init__(self,
                  TYPE_OF_VARIABLE_INDEXED_WITH_VARIABLE_TYPE='dictionary',
                  TYPE_OF_VARIABLE_INDEXED_WITH_INTEGER_TYPE='list',
-                 BOOLEAN_CONDITIONS=False,
                  PACKAGE_NAME='',
                  TEMPLATE_DIR='templates',
                  CUSTOM_FILTERS=[],
@@ -63,7 +55,6 @@ class Config(object):
                              'either "dictionary", "tuple" or "list"')
         self.TYPE_OF_VARIABLE_INDEXED_WITH_INTEGER_TYPE = TYPE_OF_VARIABLE_INDEXED_WITH_INTEGER_TYPE
         self.TYPE_OF_VARIABLE_INDEXED_WITH_VARIABLE_TYPE = TYPE_OF_VARIABLE_INDEXED_WITH_VARIABLE_TYPE
-        self.BOOLEAN_CONDITIONS = BOOLEAN_CONDITIONS
         self.PACKAGE_NAME = PACKAGE_NAME
         self.TEMPLATE_DIR = TEMPLATE_DIR
         self.CUSTOM_FILTERS = CUSTOM_FILTERS
