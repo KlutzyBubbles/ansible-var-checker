@@ -6,7 +6,7 @@ from ..model import Scalar, Dictionary, List, Tuple, Variable
 from ..mergers import merge_rtypes, merge, merge_many, merge_bool_expr_structs
 from ..exceptions import InvalidExpression, UnexpectedExpression, MergeException
 from ..config import default_config
-from .. import _compat
+from six import iteritems, iterkeys, string_types
 from .util import visit_many
 
 
@@ -141,7 +141,7 @@ def visit_expr(node, ctx, macroses=None, config=default_config):
     """
     visitor = expr_visitors.get(type(node))
     if not visitor:
-        for node_cls, visitor_ in _compat.iteritems(expr_visitors):
+        for node_cls, visitor_ in iteritems(expr_visitors):
             if isinstance(node, node_cls):
                 visitor = visitor_
     if not visitor:
@@ -171,7 +171,7 @@ def _visit_dict(node, ctx, macroses, items, config=default_config):
             struct = merge(struct, key_struct)
             if isinstance(key, nodes.Const):
                 rtype[key.value] = value_rtype
-        elif isinstance(key, _compat.string_types):
+        elif isinstance(key, string_types):
             rtype[key] = value_rtype
     return rtype, struct
 
@@ -246,7 +246,7 @@ def visit_getitem(node, ctx, macroses=None, config=default_config):
             #     items = [Variable() for i in range(arg.value + 1)]
             #     items[arg.value] = ctx.get_predicted_struct()
             #     predicted_struct = Tuple.from_node(node, tuple(items), may_be_extended=True)
-        elif isinstance(arg.value, _compat.string_types):
+        elif isinstance(arg.value, string_types):
             predicted_struct = Dictionary.from_node(node, {
                 arg.value: ctx.get_predicted_struct(label=arg.value),
             })
@@ -369,8 +369,7 @@ def visit_call(node, ctx, macroses=None, config=default_config):
                 raise InvalidExpression(node, ('incorrect usage of "{0}". it takes '
                                               'exactly {1} positional arguments'.format(macro.name, len(macro.args))))
             if call.passed_kwargs:
-                first_unknown_kwarg = next(
-                    _compat.iterkeys(call.passed_kwargs))
+                first_unknown_kwarg = next(iterkeys(call.passed_kwargs))
                 raise InvalidExpression(node, ('incorrect usage of "{0}". unknown keyword argument '
                                               '"{1}" is passed'.format(macro.name, first_unknown_kwarg)))
             return Variable(), args_struct
@@ -641,7 +640,7 @@ def visit_template_data(node, ctx, macroses=None, config=default_config):
 @visits_expr(nodes.Const)
 def visit_const(node, ctx, macroses=None, config=default_config):
     ctx.meet(Scalar(), node)
-    if isinstance(node.value, _compat.string_types):
+    if isinstance(node.value, string_types):
         rtype = Scalar.from_node(node, constant=True)
     elif isinstance(node.value, bool):
         rtype = Scalar.from_node(node, constant=True)

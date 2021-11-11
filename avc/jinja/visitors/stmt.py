@@ -7,7 +7,7 @@ from ..model import Scalar, Dictionary, List, Variable, Tuple
 from ..macro import Macro
 from ..mergers import merge, merge_many
 from ..exceptions import InvalidExpression
-from .._compat import iteritems, izip, zip_longest
+from six import iteritems, zip, zip_longest
 from .expr import Context, visit_expr
 from .util import visit_many
 
@@ -118,7 +118,7 @@ def visit_assign(node, macroses=None, config=default_config, child_blocks=None):
             if len(node.target.items) != len(node.node.items):
                 raise InvalidExpression(node, 'number of items in left side is different '
                                              'from right side')
-            for name_node, var_node in izip(node.target.items, node.node.items):
+            for name_node, var_node in zip(node.target.items, node.node.items):
                 variables.append((name_node.name, var_node))
         for var_name, var_node in variables:
             var_rtype, var_struct = visit_expr(var_node, Context(

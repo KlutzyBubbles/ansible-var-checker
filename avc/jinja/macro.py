@@ -1,4 +1,4 @@
-from . import _compat
+from six import iteritems
 from .config import default_config
 from .mergers import merge
 from .model import Dictionary, Variable
@@ -65,7 +65,7 @@ class MacroCall(object):
 
     def _match_passed_kwargs(self, to_args):
         rv = Dictionary()
-        for kwarg_name, (kwarg_node, kwarg_type) in list(_compat.iteritems(self.passed_kwargs)):
+        for kwarg_name, (kwarg_node, kwarg_type) in list(iteritems(self.passed_kwargs)):
             for (expected_arg_name, expected_arg_struct) in list(to_args):
                 if kwarg_name == expected_arg_name:
                     _, s = visit_expr(kwarg_node.value,

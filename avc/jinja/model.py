@@ -1,8 +1,7 @@
 import pprint
 
 from jinja2 import nodes
-
-from . import _compat
+from six import iteritems, iterkeys
 
 
 class Variable(object):
@@ -141,7 +140,7 @@ class Dictionary(Variable):
     def clone(self):
         rv = super(Dictionary, self).clone()
         rv.data = {}
-        for k, v in _compat.iteritems(self.data):
+        for k, v in iteritems(self.data):
             rv.data[k] = v.clone()
         return rv
 
@@ -175,13 +174,13 @@ class Dictionary(Variable):
         return self.data.items()
 
     def iteritems(self):
-        return _compat.iteritems(self.data)
+        return iteritems(self.data)
 
     def keys(self):
         return self.data.keys()
 
     def iterkeys(self):
-        return _compat.iterkeys(self.data)
+        return iterkeys(self.data)
 
     def pop(self, key, default=None):
         return self.data.pop(key, default)

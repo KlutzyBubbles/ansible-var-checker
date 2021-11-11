@@ -3,7 +3,7 @@ import jinja2
 from .config import Config
 from .model import Dictionary
 from .visitors import visit
-from . import _compat
+from six import iteritems
 
 
 def parse(template, jinja2_env=None):
@@ -20,7 +20,7 @@ def parse(template, jinja2_env=None):
 
 def _ignore_constants(var):
     if isinstance(var, Dictionary):
-        for k, v in list(_compat.iteritems(var)):
+        for k, v in list(iteritems(var)):
             if v.constant and not v.may_be_defined:
                 del var[k]
             else:
