@@ -20,3 +20,5 @@ dict:
 - Setting variables in jinja2 templates are seen as variable usage and will be marked as undefined if they have not been registered outside of the jinja2 template
 
 - Because of the removed scalar typing (to fix issues with filter discovery and other edge cases), infer-ing assumes all if statements evaluate to a boolean which can fail when actually run. This is out of scope of what avc is meant to do and is expected behavior (aka, test your code before pushing)
+
+- Python 3.6.x isn't tested and isn't 100% supported due to https://www.python.org/dev/peps/pep-0538/ being introduced min 3.7. 3.6 can still be configured to work with UTF-8 encoding but this package is not tested against 3.6
