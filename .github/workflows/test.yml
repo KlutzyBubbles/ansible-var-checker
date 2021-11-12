@@ -1,16 +1,6 @@
 name: Test across Python versions
 
 on:
-  push:
-    paths:
-      - '!.*'
-      - '!*.code-workspace'
-      - '!*.md'
-      - '**/*'
-      - '!.github/**/*'
-      - '.github/workflows/test.yml'
-    branches:
-      - main
   pull_request:
     branches:
       - main
