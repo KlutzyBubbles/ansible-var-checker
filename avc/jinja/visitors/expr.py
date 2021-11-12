@@ -56,8 +56,8 @@ class Context(object):
 
     Suppose :func:`visit_getattr` is called with the following arguments::
 
-       node = Getattr(node=Getattr(node=Name(name='data'), attr='field'), attr='subfield'))
-       context = Context(return_struct_cls=Scalar, predicted_struct=Scalar())
+      node = Getattr(node=Getattr(node=Name(name='data'), attr='field'), attr='subfield'))
+      context = Context(return_struct_cls=Scalar, predicted_struct=Scalar())
 
     It looks to the outermost NODE node and based on it's type (which is :class:`nodes.Getattr`)
     and it's ``attr`` field (which equals to ``"subfield"``) infers that a variable described by the
@@ -66,19 +66,19 @@ class Context(object):
     It calls a visitor for inner node and :func:`visit_getattr` gets called again, but
     with different arguments::
 
-       node = Getattr(node=Name(name='data', ctx='load'), attr='field')
-       ctx = Context(return_struct_cls=Scalar, predicted_struct=Dictionary({subfield: Scalar()}))
+      node = Getattr(node=Name(name='data', ctx='load'), attr='field')
+      ctx = Context(return_struct_cls=Scalar, predicted_struct=Dictionary({subfield: Scalar()}))
 
     :func:`visit_getattr` applies the same logic again. The inner node is a :class:`nodes.Name`, so that
     it calls :func:`visit_name` with the following arguments::
 
-       node = Name(name='data')
-       ctx = Context(
-           return_struct_cls=Scalar,
-           predicted_struct=Dictionary({
-               field: Dictionary({subfield: Scalar()}))
-           })
-       )
+      node = Name(name='data')
+      ctx = Context(
+          return_struct_cls=Scalar,
+          predicted_struct=Dictionary({
+              field: Dictionary({subfield: Scalar()}))
+          })
+      )
 
     :func:`visit_name` does not do much by itself. Based on a context it knows what structure and
     what type must have a variable described by a given :class:`nodes.Name` node, so
@@ -112,9 +112,7 @@ class Context(object):
         else:
             return True
 
-
 expr_visitors = {}
-
 
 def visits_expr(node_cls):
     """Decorator that registers a function as a visitor for ``node_cls``.
@@ -130,7 +128,6 @@ def visits_expr(node_cls):
         return wrapped_func
     return decorator
 
-
 def visit_expr(node, ctx, macroses=None, config=default_config):
     """Returns a structure of ``node``.
 
@@ -139,7 +136,6 @@ def visit_expr(node, ctx, macroses=None, config=default_config):
     :returns: a tuple where the first element is an expression type (instance of :class:`Variable`)
               and the second element is an expression structure (instance of :class:`.model.Dictionary`)
     """
-    # print(node)
     visitor = expr_visitors.get(type(node))
     if not visitor:
         for node_cls, visitor_ in iteritems(expr_visitors):
@@ -149,7 +145,6 @@ def visit_expr(node, ctx, macroses=None, config=default_config):
         raise Exception(
             'expression visitor for {0} is not found'.format(type(node)))
     return visitor(node, ctx, macroses, config=config)
-
 
 def _visit_dict(node, ctx, macroses, items, config=default_config):
     """A common logic behind nodes.Dict and nodes.Call (``{{ dict(a=1) }}``)
@@ -176,7 +171,6 @@ def _visit_dict(node, ctx, macroses, items, config=default_config):
             rtype[key] = value_rtype
     return rtype, struct
 
-
 @visits_expr(nodes.BinExpr)
 def visit_bin_expr(node, ctx, macroses=None, config=default_config):
     l_rtype, l_struct = visit_expr(node.left, ctx, macroses, config=config)
@@ -184,11 +178,9 @@ def visit_bin_expr(node, ctx, macroses=None, config=default_config):
     rv = merge_bool_expr_structs(l_struct, r_struct)
     return merge_rtypes(l_rtype, r_rtype, operator=node.operator), rv
 
-
 @visits_expr(nodes.UnaryExpr)
 def visit_unary_expr(node, ctx, macroses=None, config=default_config):
     return visit_expr(node.node, ctx, macroses, config=config)
-
 
 @visits_expr(nodes.Compare)
 def visit_compare(node, ctx, macroses=None, config=default_config):
@@ -202,23 +194,19 @@ def visit_compare(node, ctx, macroses=None, config=default_config):
         struct = merge(struct, op_struct)
     return Scalar.from_node(node), struct
 
-
 @visits_expr(nodes.Slice)
 def visit_slice(node, ctx, macroses=None, config=default_config):
-    nodes = [node for node in [node.start,
-                               node.stop, node.step] if node is not None]
+    nodes = [node for node in [node.start, node.stop, node.step] if node is not None]
     struct = visit_many(nodes, macroses, config,
                         predicted_struct_cls=Scalar,
                         return_struct_cls=Scalar)
     return Variable(), struct
-
 
 @visits_expr(nodes.Name)
 def visit_name(node, ctx, macroses=None, config=default_config):
     return ctx.return_struct_cls.from_node(node), Dictionary({
         node.name: ctx.get_predicted_struct(label=node.name)
     })
-
 
 @visits_expr(nodes.Getattr)
 def visit_getattr(node, ctx, macroses=None, config=default_config):
@@ -230,51 +218,30 @@ def visit_getattr(node, ctx, macroses=None, config=default_config):
     test1, test2 = visit_expr(node.node, context, macroses, config=config)
     return test1, test2
 
-
 @visits_expr(nodes.Getitem)
 def visit_getitem(node, ctx, macroses=None, config=default_config):
     arg = node.arg
     if isinstance(arg, nodes.Const):
         if isinstance(arg.value, int):
             predicted_struct = Variable.from_node(node)
-            # if config.TYPE_OF_VARIABLE_INDEXED_WITH_INTEGER_TYPE == 'list':
-            #     predicted_struct = List.from_node(node, ctx.get_predicted_struct())
-            # elif config.TYPE_OF_VARIABLE_INDEXED_WITH_INTEGER_TYPE == 'dictionary':
-            #     predicted_struct = Dictionary.from_node(node, {
-            #         arg.value: ctx.get_predicted_struct(),
-            #     })
-            # elif config.TYPE_OF_VARIABLE_INDEXED_WITH_INTEGER_TYPE == 'tuple':
-            #     items = [Variable() for i in range(arg.value + 1)]
-            #     items[arg.value] = ctx.get_predicted_struct()
-            #     predicted_struct = Tuple.from_node(node, tuple(items), may_be_extended=True)
         elif isinstance(arg.value, string_types):
             predicted_struct = Dictionary.from_node(node, {
                 arg.value: ctx.get_predicted_struct(label=arg.value),
             })
         else:
-            raise InvalidExpression(arg, '{0} is not supported as an index for a list or'
-                                         ' a key for a dictionary'.format(arg.value))
+            raise InvalidExpression(arg, '{0} is not supported as an index for a list or a key for a dictionary'.format(arg.value))
     elif isinstance(arg, nodes.Slice):
         predicted_struct = List.from_node(
             node, ctx.get_predicted_struct())
     else:
       predicted_struct = Variable.from_node(node)
-        # if config.TYPE_OF_VARIABLE_INDEXED_WITH_VARIABLE_TYPE == 'list':
-        #     predicted_struct = List.from_node(
-        #         node, ctx.get_predicted_struct())
-        # elif config.TYPE_OF_VARIABLE_INDEXED_WITH_VARIABLE_TYPE == 'dictionary':
-        #     predicted_struct = Dictionary.from_node(
-        #         node)
-
     _, arg_struct = visit_expr(arg,
-                               Context(predicted_struct=Scalar.from_node(
-                                   arg)),
-                               macroses, config=config)
+                              Context(predicted_struct=Scalar.from_node(arg)),
+                              macroses, config=config)
     rtype, struct = visit_expr(node.node, Context(
         ctx=ctx,
         predicted_struct=predicted_struct), macroses, config=config)
     return rtype, merge(struct, arg_struct)
-
 
 @visits_expr(nodes.Test)
 def visit_test(node, ctx, macroses=None, config=default_config):
@@ -293,45 +260,37 @@ def visit_test(node, ctx, macroses=None, config=default_config):
             predicted_struct.checked_as_undefined = True
     else:
         raise InvalidExpression(node, 'unknown test "{0}"'.format(node.name))
-    rtype, struct = visit_expr(node.node, Context(return_struct_cls=Scalar,
-                                                 predicted_struct=predicted_struct), macroses, config=config)
+    rtype, struct = visit_expr(node.node, Context(return_struct_cls=Scalar, predicted_struct=predicted_struct), macroses, config=config)
     if node.name == 'divisibleby':
         if not node.args:
             raise InvalidExpression(node, 'divisibleby must have an argument')
         _, arg_struct = visit_expr(node.args[0],
-                                   Context(predicted_struct=Scalar.from_node(node.args[0])),
-                                   macroses, config=config)
+                                  Context(predicted_struct=Scalar.from_node(node.args[0])),
+                                  macroses, config=config)
         struct = merge(arg_struct, struct)
     return rtype, struct
-
 
 @visits_expr(nodes.Concat)
 def visit_concat(node, ctx, macroses=None, config=default_config):
     ctx.meet(Scalar(), node)
-    return Scalar.from_node(node), visit_many(node.nodes, macroses, config,
-                                                                                     predicted_struct_cls=Scalar)
-
+    return Scalar.from_node(node), visit_many(node.nodes, macroses, config, predicted_struct_cls=Scalar)
 
 @visits_expr(nodes.CondExpr)
 def visit_cond_expr(node, ctx, macroses=None, config=default_config):
     test_predicted_struct = Variable.from_node(node.test)
-    test_rtype, test_struct = visit_expr(node.test, Context(predicted_struct=test_predicted_struct), macroses,
-                                         config=config)
+    test_rtype, test_struct = visit_expr(node.test, Context(predicted_struct=test_predicted_struct), macroses, config=config)
     if_rtype, if_struct = visit_expr(node.expr1, ctx, macroses, config=config)
     else_rtype, else_struct = visit_expr(
         node.expr2, ctx, macroses, config=config)
     struct = merge_many(if_struct, test_struct, else_struct)
     rtype = merge_rtypes(if_rtype, else_rtype)
-
     for var_name, var_struct in test_struct.iteritems():
         if var_struct.checked_as_defined or var_struct.checked_as_undefined:
             if var_struct.checked_as_undefined:
                 lookup_struct = if_struct
             elif var_struct.checked_as_defined:
                 lookup_struct = else_struct
-            struct[var_name].may_be_defined = (lookup_struct and
-                                               var_name in lookup_struct and
-                                               lookup_struct[var_name].constant)
+            struct[var_name].may_be_defined = (lookup_struct and var_name in lookup_struct and lookup_struct[var_name].constant)
             struct[var_name].checked_as_defined = test_struct[var_name].checked_as_defined and (
                 not lookup_struct or not var_name in lookup_struct or lookup_struct[
                     var_name].constant
@@ -340,9 +299,7 @@ def visit_cond_expr(node, ctx, macroses=None, config=default_config):
                 not lookup_struct or not var_name in lookup_struct or lookup_struct[
                     var_name].constant
             )
-
     return rtype, struct
-
 
 @visits_expr(nodes.Call)
 def visit_call(node, ctx, macroses=None, config=default_config):
@@ -360,7 +317,6 @@ def visit_call(node, ctx, macroses=None, config=default_config):
             if call.passed_kwargs:
                 args_struct = merge(
                     args_struct, call.match_passed_kwargs_to_expected_kwargs())
-
             if call.passed_args or call.expected_args:
                 raise InvalidExpression(node, ('incorrect usage of "{0}". it takes '
                                               'exactly {1} positional arguments'.format(macro.name, len(macro.args))))
@@ -381,7 +337,6 @@ def visit_call(node, ctx, macroses=None, config=default_config):
         elif node.node.name == 'lipsum':
             ctx.meet(Scalar(), node)
             struct = Dictionary()
-            # probable TODO: set possible types for args and kwargs
             for arg in node.args:
                 arg_rtype, arg_struct = visit_expr(arg, Context(
                     predicted_struct=Scalar.from_node(arg)), macroses,
@@ -435,7 +390,6 @@ def visit_call(node, ctx, macroses=None, config=default_config):
         raise InvalidExpression(
             node, '"{0}" call is not supported'.format(node.node.attr))
 
-
 @visits_expr(nodes.Filter)
 def visit_filter(node, ctx, macroses=None, config=default_config):
     return_struct_cls = Variable
@@ -444,39 +398,13 @@ def visit_filter(node, ctx, macroses=None, config=default_config):
                     'safe', 'string', 'striptags', 'title', 'trim', 'truncate', 'upper',
                     'urlencode', 'urlize', 'wordcount', 'wordwrap', 'e'):
         ctx.meet(Scalar(), node)
-        if node.name in ('abs', 'round'):
-            node_struct = Scalar.from_node(
-                node.node)
-            return_struct_cls = Scalar
-        elif node.name in ('float', 'int'):
-            node_struct = Scalar.from_node(
-                node.node)
-            return_struct_cls = Scalar
-        elif node.name in ('striptags', 'capitalize', 'center', 'escape', 'forceescape', 'format', 'indent',
-                          'replace', 'safe', 'title', 'trim', 'truncate', 'upper', 'urlencode',
-                          'urlize', 'wordwrap', 'e'):
-            node_struct = Scalar.from_node(
-                node.node)
-            return_struct_cls = Scalar
-        elif node.name == 'filesizeformat':
-            node_struct = Scalar.from_node(
-                node.node)
-            return_struct_cls = Scalar
-        elif node.name == 'string':
-            node_struct = Scalar.from_node(
-                node.node)
-            return_struct_cls = Scalar
-        elif node.name == 'wordcount':
-            node_struct = Scalar.from_node(
-                node.node)
-            return_struct_cls = Scalar
-        else:
-            node_struct = Scalar.from_node(
-                node.node)
+        node_struct = Scalar.from_node(
+            node.node)
+        return_struct_cls = Scalar
     elif node.name in ('batch', 'slice'):
         ctx.meet(List(List(Variable())), node)
         rtype = List(List(Variable(), linenos=[node.node.lineno]), linenos=[node.node.lineno])
-        node_struct = merge(ctx.get_predicted_struct(), rtype)
+        node_struct = merge(rtype, ctx.get_predicted_struct())
         test_, struct = visit_expr(node.node, Context(
             ctx=ctx,
             return_struct_cls=return_struct_cls,
@@ -497,18 +425,6 @@ def visit_filter(node, ctx, macroses=None, config=default_config):
             return_struct_cls=Variable,
             predicted_struct=struct
         ), macroses, config=config)
-        # predicted_struct = merge(
-        #     Variable(), ctx.get_predicted_struct())
-        # rtype, struct = visit_expr(node.node, Context(
-        #     return_struct_cls=Variable,
-        #     predicted_struct=predicted_struct
-        # ), macroses, config=config)
-        # struct.used_with_default = True
-        # item_rtype, item_struct = visit_expr(node.args[0], Context(
-        #     predicted_struct=predicted_struct), macroses, config=config)
-        # struct = merge(struct, item_struct)
-        # print(item_rtype)
-        # struct.value = item_rtype.value
         return rtype, struct
     elif node.name == 'dictsort':
         ctx.meet(List(Tuple([Scalar(), Variable()])), node)
@@ -523,8 +439,8 @@ def visit_filter(node, ctx, macroses=None, config=default_config):
             predicted_struct=node_struct
         ), macroses, config=config)
         arg_rtype, arg_struct = visit_expr(node.args[0],
-                                           Context(predicted_struct=Scalar.from_node(node.args[0])),
-                                           macroses, config=config)
+                                          Context(predicted_struct=Scalar.from_node(node.args[0])),
+                                          macroses, config=config)
         return rtype, merge(struct, arg_struct)
     elif node.name in ('first', 'lnode', 'random', 'length', 'sum'):
         if node.name in ('first', 'lnode', 'random'):
@@ -639,32 +555,18 @@ def visit_filter(node, ctx, macroses=None, config=default_config):
     ), macroses, config=config)
     return rv
 
-
-# :class:`nodes.Literal` visitors
-
 @visits_expr(nodes.TemplateData)
 def visit_template_data(node, ctx, macroses=None, config=default_config):
     return Scalar(), Dictionary()
 
-
 @visits_expr(nodes.Const)
 def visit_const(node, ctx, macroses=None, config=default_config):
     ctx.meet(Scalar(), node)
-    if isinstance(node.value, string_types):
-        rtype = Scalar.from_node(node, constant=True)
-    elif isinstance(node.value, bool):
-        rtype = Scalar.from_node(node, constant=True)
-    elif isinstance(node.value, (int, float, complex)):
-        rtype = Scalar.from_node(node, constant=True)
-    else:
-        rtype = Scalar.from_node(node, constant=True)
-    return rtype, Dictionary()
-
+    return Scalar.from_node(node, constant=True), Dictionary()
 
 @visits_expr(nodes.Tuple)
 def visit_tuple(node, ctx, macroses=None, config=default_config):
     ctx.meet(Tuple(None), node)
-
     struct = Dictionary()
     item_structs = []
     for item in node.items:
@@ -675,12 +577,10 @@ def visit_tuple(node, ctx, macroses=None, config=default_config):
     rtype = Tuple.from_node(node, item_structs, constant=True)
     return rtype, struct
 
-
 @visits_expr(nodes.List)
 def visit_list(node, ctx, macroses=None, config=default_config):
     ctx.meet(List(Variable()), node)
     struct = Dictionary()
-
     predicted_struct = merge(List(Variable()), ctx.get_predicted_struct()).items
     el_rtype = None
     for item in node.items:
@@ -693,7 +593,6 @@ def visit_list(node, ctx, macroses=None, config=default_config):
             el_rtype = merge_rtypes(el_rtype, item_rtype)
     rtype = List.from_node(node, el_rtype or Variable(), constant=True)
     return rtype, struct
-
 
 @visits_expr(nodes.Dict)
 def visit_dict(node, ctx, macroses=None, config=default_config):

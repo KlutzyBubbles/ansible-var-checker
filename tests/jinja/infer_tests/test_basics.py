@@ -73,7 +73,6 @@ def test_basics_2():
     })
     assert struct == expected_struct
 
-
 def test_basics_3():
     template = '''
     {% if x %}
@@ -130,7 +129,6 @@ def test_basics_4():
     })
     assert struct == expected_struct
 
-
 def test_basics_5():
     template = '''
     {% for row in items|batch(3, '&nbsp;') %}
@@ -147,7 +145,6 @@ def test_basics_5():
     })
     assert struct == expected_struct
 
-
 def test_basics_6():
     template = '''
     {% for row in items|batch(3, '&nbsp;') %}
@@ -158,7 +155,6 @@ def test_basics_6():
         'items': List(List(Variable(), linenos=[2]), label='items', linenos=[2]),
     })
     assert struct == expected_struct
-
 
 def test_basics_7():
     template = '''
@@ -171,7 +167,6 @@ def test_basics_7():
         'items': List(List(Variable(), label='row', linenos=[2, 3]), label='items', linenos=[2]),
     })
     assert struct == expected_struct
-
 
 def test_basics_8():
     template = '''
@@ -187,7 +182,6 @@ def test_basics_8():
     print(expected_struct)
     assert struct == expected_struct
 
-
 def test_basics_9():
     template = '''
     {% set xs = items|batch(3, '&nbsp;') %}
@@ -199,7 +193,6 @@ def test_basics_9():
         'xs': List(List(Variable(), linenos=[2]), label='xs', linenos=[2, 3])
     })
     assert struct == expected_struct
-
 
 def test_basics_10():
     template = '''
@@ -213,7 +206,6 @@ def test_basics_10():
         'items': List(Tuple((Variable(linenos=[3]), Variable(linenos=[3])), linenos=[3]), label='items', linenos=[2, 3])
     })
     assert struct == expected_struct
-
 
 def test_basics_11():
     template = '''
@@ -240,7 +232,6 @@ def test_basics_11():
     })
     assert struct == expected_struct
 
-
 def test_basics_12():
     template = '''
     {% for k, v in data|dictsort %}
@@ -254,7 +245,6 @@ def test_basics_12():
     })
     assert struct == expected_struct
 
-
 def test_basics_13():
     template = '''
     {% for x in xs %}
@@ -267,7 +257,6 @@ def test_basics_13():
         'xs': List(Variable(label='x', linenos=[3, 4]), label='xs', linenos=[2])
     })
     assert struct == expected_struct
-
 
 def test_basics_14():
     template = '''
@@ -288,7 +277,6 @@ def test_basics_14():
     })
     assert struct == expected_struct
 
-
 def test_raw():
     template = '''
     {% raw %}
@@ -298,7 +286,6 @@ def test_raw():
     struct = infer(template)
     expected_struct = Dictionary()
     assert struct == expected_struct
-
 
 def test_for():
     template = '''
@@ -340,7 +327,6 @@ def test_for():
     with pytest.raises(UnexpectedExpression):
         infer(template)
 
-
 def test_assignment():
     template = '''
     {% set args = ['foo'] if foo else [] %}
@@ -356,7 +342,6 @@ def test_assignment():
         'sep': Scalar(label='sep', linenos=[5])
     })
     assert struct == expected_struct
-
 
 def test_boolean_conditions_setting_1():
     template = '''

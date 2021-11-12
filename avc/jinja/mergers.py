@@ -48,33 +48,15 @@ def merge(first, second, custom_merger=None):
     elif isinstance(first, Scalar) or isinstance(second, Scalar):
       scalar_item = first if isinstance(first, Scalar) else second
       other_item = first if not isinstance(first, Scalar) else second
-      # print('SCALAR')
-      # print(scalar_item)
-      # print(other_item)
-      # print('CHECKS')
-      # print(isinstance(other_item, Dictionary))
-      # print(isinstance(other_item, Tuple))
-      # print(isinstance(other_item, List))
-      # print('END')
       if instanceof_many(other_item, [List, Tuple, Dictionary]):
         raise MergeException(first, second)
       result = scalar_item.clone()
-      #print('result')
-      #print(result)
-      #print('END')
     elif instanceof_many(first, [List, Tuple, Dictionary]) or instanceof_many(second, [List, Tuple, Dictionary]):
       typed_item = first if instanceof_many(first, [List, Tuple, Dictionary]) else second
       other_item = first if not instanceof_many(first, [List, Tuple, Dictionary]) else second
-      #print('TYPED')
-      #print(typed_item)
-      #print(other_item)
-      #print('END')
       if isinstance(other_item, Scalar):
         raise MergeException(first, second)
       result = typed_item.clone()
-      #print('result')
-      #print(result)
-      #print('END')
     elif first.is_unknown() or second.is_unknown():
       known_item = second if first.is_unknown() else first
       result = known_item.clone()
@@ -83,7 +65,7 @@ def merge(first, second, custom_merger=None):
     result.label = first.label or second.label
     result.linenos = list(sorted(set(first.linenos + second.linenos)))
     result.constant = first.constant
-    result.may_be_defined = first.may_be_defined
+    result.may_be_defined = second.may_be_defined
     result.used_with_default = first.used_with_default and second.used_with_default
     result.checked_as_defined = first.checked_as_defined and second.checked_as_defined
     result.checked_as_undefined = first.checked_as_undefined and second.checked_as_undefined
@@ -104,14 +86,12 @@ def merge_many(first, second, *args):
     else:
         return struct
 
-
 def merge_bool_expr_structs(first, second, operator=None):
     def merger(first, second, result):
         result.checked_as_defined = first.checked_as_defined
         result.checked_as_undefined = first.checked_as_undefined and second.checked_as_undefined
         return result
     return merge(first, second, custom_merger=merger)
-
 
 def merge_rtypes(first, second, operator=None):
     if operator in ('+', '-'):

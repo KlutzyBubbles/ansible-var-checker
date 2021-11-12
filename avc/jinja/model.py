@@ -6,48 +6,37 @@ from six import iteritems, iterkeys
 class Variable(object):
     """A base variable class.
 
-    .. attribute:: linenos
-
-        An ordered list of line numbers on which the variable occurs.
-
     .. attribute:: label
-
         A name of the variable in template.
 
-    .. attribute:: constant
+    .. attribute:: linenos
+        An ordered list of line numbers on which the variable occurs.
 
+    .. attribute:: constant
         Is true if the variable is defined using a ``{% set %}`` tag before it
         occurs within any other statement in the template, or inferred from
         a constant Jinja2 node.
 
     .. attribute:: may_be_defined
-
         Is true if the variable would be defined (using a ``{% set %}`` expression) if it's missing
         from the template context. For example, ``x`` is ``may_be_defined`` in the following template::
 
             {% if x is undefined %} {% set x = 1 %} {% endif %}
 
     .. attribute:: used_with_default
-
         Is true if the variable occurs only within the ``default`` filter.
 
     .. attribute:: checked_as_undefined
-
         Is true if the variable occurs within ``{% if %}`` block which condition checks
         if the variable is undefined.
 
     .. attribute:: checked_as_defined
-
         Is true if the variable occurs within ``{% if %}`` block which condition checks
         if the variable is defined.
-
-    .. attribute:: value
-
-        Value of the variable in template. Set by default filter or assignment.
     """
     def __init__(self, label=None, linenos=None, constant=False,
-                 may_be_defined=False, used_with_default=False,
-                 checked_as_undefined=False, checked_as_defined=False):
+                may_be_defined=False, used_with_default=False,
+                checked_as_undefined=False, checked_as_defined=False):
         self.label = label
         self.linenos = linenos if linenos is not None else []
         self.constant = constant
@@ -68,7 +57,7 @@ class Variable(object):
         }
 
     def _get_vals(self):
-      return str(self.linenos) + ', ' + str(self.label) + ', ' + str(self.constant) + ', ' + str(self.used_with_default) + ', ' + str(self.checked_as_undefined) + ', ' + str(self.checked_as_defined) + ', ' + str(self.required)
+      return str(self.linenos) + ', ' + str(self.label) + ', ' + str(self.constant) + ', [' + str(self.may_be_defined) + ', ' + str(self.used_with_default) + ', ' + str(self.checked_as_undefined) + ', ' + str(self.checked_as_defined) + '], ' + str(self.required)
 
     def is_unknown(Self):
       return True
@@ -108,7 +97,6 @@ class Variable(object):
 
     def __repr__(self):
       return '<unknown>, ' + self._get_vals()
-
 
 class Dictionary(Variable):
     """A dictionary.
@@ -184,7 +172,6 @@ class Dictionary(Variable):
     def pop(self, key, default=None):
         return self.data.pop(key, default)
 
-
 class List(Variable):
     """A list which items are of the same type.
 
@@ -214,7 +201,6 @@ class List(Variable):
     def from_node(cls, node, items, **kwargs):
         kwargs = dict(cls._get_kwargs_from_node(node), **kwargs)
         return cls(items, **kwargs)
-
 
 class Tuple(Variable):
     """A tuple.
@@ -250,7 +236,6 @@ class Tuple(Variable):
     def from_node(cls, node, items, **kwargs):
         kwargs = dict(cls._get_kwargs_from_node(node), **kwargs)
         return cls(items, **kwargs)
-
 
 class Scalar(Variable):
     """A scalar. Either string, number, boolean or ``None``."""

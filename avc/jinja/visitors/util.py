@@ -3,7 +3,6 @@ import jinja2.nodes
 from ..mergers import merge
 from ..model import Dictionary, Scalar, Variable
 
-
 def visit(node, macroses, config, predicted_struct_cls=Variable, return_struct_cls=Variable):
     if isinstance(node, jinja2.nodes.Stmt):
         structure = visit_stmt(node, macroses, config)
@@ -15,13 +14,12 @@ def visit(node, macroses, config, predicted_struct_cls=Variable, return_struct_c
         structure = visit_many(node.body, macroses, config)
     return structure
 
-
 def visit_many(nodes, macroses, config, predicted_struct_cls=Variable, return_struct_cls=Variable):
     """Visits ``nodes`` and merges results.
 
     :param nodes: list of :class:`jinja2.nodes.Node`
     :param predicted_struct_cls: ``predicted_struct`` for expression visitors will be constructed
-                                   using this class by calling :meth:`from_node` method
+                                  using this class by calling :meth:`from_node` method
     :return: :class:`Dictionary`
     """
     rv = Dictionary()
@@ -32,7 +30,6 @@ def visit_many(nodes, macroses, config, predicted_struct_cls=Variable, return_st
             structure = visit(node, macroses, config, predicted_struct_cls, return_struct_cls)
         rv = merge(structure, rv)
     return rv
-
 
 # keep these at the end of file to avoid circular imports
 from .expr import Context, visit_expr
