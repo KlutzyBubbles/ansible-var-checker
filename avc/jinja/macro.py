@@ -27,23 +27,20 @@ class Macro(object):
         self.args = args
         self.kwargs = kwargs
 
-
 class MacroCall(object):
+
     def __init__(self, macro, passed_args, passed_kwargs, config=default_config):
         self.config = config
-
         self.passed_args = []
         for arg_node in passed_args:
             arg_rtype, arg_struct = visit_expr(
                 arg_node, Context(predicted_struct=Variable.from_node(arg_node)), config=config)
             self.passed_args.append((arg_node, arg_rtype))
-
         self.passed_kwargs = {}
         for kwarg_node in passed_kwargs:
             kwarg_rtype, kwarg_struct = visit_expr(
                 kwarg_node.value, Context(predicted_struct=Variable.from_node(kwarg_node)), config=config)
             self.passed_kwargs[kwarg_node.key] = (kwarg_node, kwarg_rtype)
-
         self.expected_args = macro.args[:]
         self.expected_kwargs = macro.kwargs[:]
 
@@ -81,7 +78,6 @@ class MacroCall(object):
 
     def match_passed_kwargs_to_expected_kwargs(self):
         return self._match_passed_kwargs(self.expected_kwargs)
-
 
 from .visitors.expr import visit_expr
 from .visitors.expr import Context

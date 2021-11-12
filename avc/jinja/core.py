@@ -5,7 +5,6 @@ from .model import Dictionary
 from .visitors import visit
 from six import iteritems
 
-
 def parse(template, jinja2_env=None):
     """Parses Jinja2 template and returns it's NODE.
 
@@ -17,7 +16,6 @@ def parse(template, jinja2_env=None):
         jinja2_env = jinja2.Environment()
     return jinja2_env.parse(template)
 
-
 def _ignore_constants(var):
     if isinstance(var, Dictionary):
         for k, v in list(iteritems(var)):
@@ -26,7 +24,6 @@ def _ignore_constants(var):
             else:
                 _ignore_constants(v)
     return var
-
 
 def infer_from_node(node, config=Config()):
     """Returns a :class:`.model.Dictionary` which reflects a structure of variables used
@@ -39,12 +36,11 @@ def infer_from_node(node, config=Config()):
     :type config: :class:`.config.Config`
     :rtype: :class:`.model.Dictionary`
     :raises: :class:`.exceptions.MergeException`, :class:`.exceptions.InvalidExpression`,
-             :class:`.exceptions.UnexpectedExpression`
+            :class:`.exceptions.UnexpectedExpression`
     """
     rv = visit(node, {}, config)
     rv = _ignore_constants(rv)
     return rv
-
 
 def infer(template, config=Config()):
     """Returns a :class:`.model.Dictionary` which reflects a structure of the context required by ``template``.
@@ -55,6 +51,6 @@ def infer(template, config=Config()):
     :type config: :class:`.config.Config`
     :rtype: :class:`.model.Dictionary`
     :raises: :class:`.exceptions.MergeException`, :class:`.exceptions.InvalidExpression`,
-             :class:`.exceptions.UnexpectedExpression`
+            :class:`.exceptions.UnexpectedExpression`
     """
     return infer_from_node(parse(template), config=config)
