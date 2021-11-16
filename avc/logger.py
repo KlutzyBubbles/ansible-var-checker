@@ -1,13 +1,13 @@
 import logging
 
-try:
+try: # pragma: no cover
   import textwrap
   textwrap.indent
-except AttributeError:
+except AttributeError: # pragma: no cover
   def indent(text, amount, ch=' '):
     padding = amount * ch
     return ''.join(padding+line for line in text.splitlines(True))
-else:
+else: # pragma: no cover
   def indent(text, amount, ch=' '):
     return textwrap.indent(text, amount * ch)
 
@@ -19,14 +19,6 @@ class IndentedLoggerAdapter(logging.LoggerAdapter):
     self.indent = 0
     self.filo = []
     self.char = char if char is not None else ' '
-
-  def _add_to_filo(self, value):
-    self.history.insert(0, value)
-    self.history.pop()
-
-  def _pop_recent_history(self):
-    self.history.append(None)
-    return self.history.pop(0)
 
   def adjust(self, adjust=0):
     if adjust == 0:

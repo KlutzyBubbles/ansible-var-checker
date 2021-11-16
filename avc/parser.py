@@ -83,16 +83,8 @@ class PlaybookParser(object):
     if play.get_name() not in self.scopes:
       self.scopes[play.get_name()] = Scope()
     scope = self.scopes[play.get_name()]
-    # for var in play.get_vars():
-    #   self.add_vars(scope, self.get_jinja_vars(play.vars[var], None, other_scope='play var, ' + str(var)), 'used')
-    # print(play.get_vars())
-    self._process_set_fact_args_jinja(scope, play.get_vars(), None)
-    self._process_set_fact_args(scope, play.get_vars(), None)
-    # for var in play.get_vars():
-    #   self._process_set_fact_args(scope, args, task, other_scope=None, trail=[])
-    #   if scope.is_magic(var):
-    #     self.errors.append(ErrorRecord('Play var: ' + var + ' is a reserved magic variable', task, self.current_play, self.playbook, role=task._role))
-    #   scope.add_variable(var, 'changed')
+    self._process_set_fact_args_jinja(scope, play.get_vars(), other_scope='play var, ')
+    self._process_set_fact_args(scope, play.get_vars(), other_scope='play var, ')
     flush_block = Block.load(
       data={'meta': 'flush_handlers'},
       play=play,
