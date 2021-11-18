@@ -1,5 +1,7 @@
 # ansible-var-checker
 
+[![codecov](https://codecov.io/gh/KlutzyBubbles/ansible-var-checker/branch/main/graph/badge.svg?token=NKQROPA7NT)](https://codecov.io/gh/KlutzyBubbles/ansible-var-checker)
+
 CLI to check what vars are defined / used to find undefined or extra vars not documented.
 
 Based on source for ansible 2.9 and striped down and modified version of jinja2schema.
