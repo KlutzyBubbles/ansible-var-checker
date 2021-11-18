@@ -22,9 +22,19 @@ setup(
     long_description=open('README.md').read(),
     author='KlutzyBubbles',
     author_email='LTzilantois@gmail.com',
-    url='https://ansible_var_checker.readthedocs.io',
-    packages=find_packages(exclude=['tests', 'test_ansible_project']),
-    install_requires=['Jinja2>=2.2'],
+    url='https://github.com/KlutzyBubbles/ansible-var-checker',
+    project_urls={
+        'Documentation': 'https://ansible_var_checker.readthedocs.io',
+        'Source': 'https://github.com/KlutzyBubbles/ansible-var-checker',
+        'Issues': 'https://github.com/KlutzyBubbles/ansible-var-checker/issues',
+    },
+    packages=find_packages(include=['avc']),
+    python_requires='==2.7.*, >=3.7',
+    install_requires=[
+        'ansible==2.9.*',
+        'jinja2~=2.11',
+        'six~=1.14',
+    ],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
