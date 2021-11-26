@@ -1,7 +1,7 @@
 import jinja2.nodes
 
-from ..mergers import merge
-from ..model import Dictionary, Scalar, Variable
+from ansiblevarchecker.jinja.mergers import merge
+from ansiblevarchecker.jinja.model import Dictionary, Scalar, Variable
 
 def visit(node, macroses, config, predicted_struct_cls=Variable, return_struct_cls=Variable):
     if isinstance(node, jinja2.nodes.Stmt):

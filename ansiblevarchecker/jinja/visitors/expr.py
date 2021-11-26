@@ -2,12 +2,12 @@ import functools
 from inspect import getargspec, ismethod
 from jinja2 import nodes
 
-from ..model import Scalar, Dictionary, List, Tuple, Variable
-from ..mergers import merge_rtypes, merge, merge_many, merge_bool_expr_structs
-from ..exceptions import InvalidExpression, UnexpectedExpression, MergeException
-from ..config import default_config
+from ansiblevarchecker.jinja.model import Scalar, Dictionary, List, Tuple, Variable
+from ansiblevarchecker.jinja.mergers import merge_rtypes, merge, merge_many, merge_bool_expr_structs
+from ansiblevarchecker.jinja.exceptions import InvalidExpression, UnexpectedExpression, MergeException
+from ansiblevarchecker.jinja.config import default_config
 from six import iteritems, iterkeys, string_types
-from .util import visit_many
+from ansiblevarchecker.jinja.visitors.util import visit_many
 
 
 class Context(object):

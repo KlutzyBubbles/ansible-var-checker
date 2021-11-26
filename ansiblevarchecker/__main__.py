@@ -1,15 +1,15 @@
 import argparse
-from .info import __version__
-from .file_handler import FileHandler
+from ansiblevarchecker.__init__ import __version__
+from ansiblevarchecker.file_handler import FileHandler
 import ansible
-from .jinja.config import Config
-from .parser import PlaybookParser
-from .yaml_constructor import YamlConstructor
+from ansiblevarchecker.jinja import Config
+from ansiblevarchecker.parser import PlaybookParser
+from ansiblevarchecker.yaml_constructor import YamlConstructor
 import ansible.plugins.filter.core
 import ansible.plugins.filter.mathstuff
 import ansible.plugins.filter.urls
 import ansible.plugins.filter.urlsplit
-from .logger import IndentedLoggerAdapter
+from ansiblevarchecker.logger import IndentedLoggerAdapter
 import logging
 
 logging.basicConfig(format='%(message)s', level=logging.DEBUG)
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 adapter = IndentedLoggerAdapter(logger)
 title_adapter = IndentedLoggerAdapter(logger, char='-')
 
-parser = argparse.ArgumentParser(prog='avc', description='Process ansible files to get variable information')
+parser = argparse.ArgumentParser(prog='ansiblevarchecker', description='Process ansible files to get variable information')
 
 parser.add_argument('items', metavar='item', type=str, nargs='+', help='File(s) or folder(s) to use as the input')
 parser.add_argument('-v', '--verbosity', action='count', default=0, help='Verbosity of output')
@@ -68,8 +68,3 @@ for filename in file_handler.get_valid_files():
     title_adapter.debug('--- JINJA ERRORS ---')
     for error in parser.jinja_errors:
       adapter.debug(str(error))
-
-# print(file_handler._file)
-# print(file_handler._dir)
-# print(file_handler.files)
-# print(file_handler.get_valid_files())

@@ -4,7 +4,7 @@ import re
 from setuptools import setup, find_packages
 
 __version__ = ''
-with open('avc/__init__.py', 'r') as fd:
+with open('ansiblevarchecker/__init__.py', 'r') as fd:
     reg = re.compile(r'__version__ = [\'"]([^\'"]*)[\'"]')
     for line in fd:
         m = reg.match(line)
@@ -16,7 +16,7 @@ if not __version__:
     raise RuntimeError('Cannot find version information')
 
 setup(
-    name='ansible-var-checker',
+    name='ansiblevarchecker',
     version=__version__,
     description='Variable checker for ansible playbooks',
     long_description=open('README.md').read(),
@@ -28,8 +28,8 @@ setup(
         'Source': 'https://github.com/KlutzyBubbles/ansible-var-checker',
         'Issues': 'https://github.com/KlutzyBubbles/ansible-var-checker/issues',
     },
-    packages=find_packages(include=['avc']),
-    python_requires='==2.7.*, >=3.7',
+    packages=find_packages(include=['ansiblevarchecker', 'ansiblevarchecker.jinja', 'ansiblevarchecker.jinja.visitors', 'ansiblevarchecker.scope']),
+    python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*, !=3.6.*',
     install_requires=[
         'ansible==2.9.*',
         'jinja2~=2.11',
@@ -49,6 +49,9 @@ setup(
         'Programming Language :: Python :: Implementation :: CPython',
     ],
     entry_points={
-        'console_scripts': ['avc = avc:main']
+        'console_scripts': [
+            'ansiblevarchecker = ansiblevarchecker:main',
+            'avc = ansiblevarchecker:main'
+        ]
     }
 )

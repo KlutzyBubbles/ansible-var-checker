@@ -330,20 +330,15 @@ class Scope(object):
     return self.variables[name].construct_from_attr(with_history=with_history)
 
   def is_undefined(self, name, trail=[]):
-    print ('--is_undefined')
     if name == 'undefined':
       if name not in self.variables:
-        print('Not in variables')
         return True
       if self.variables[name].is_undefined():
-        print('is undefined')
         if self.parent is not None:
-          print('parent not none')
           return self.parent.is_undefined(name, trail)
         return True
       return False
     if len(trail) > 0:
-      print (name)
       current_vars = self.variables
       for key in trail:
         if key not in current_vars:

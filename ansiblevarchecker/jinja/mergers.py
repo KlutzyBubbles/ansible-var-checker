@@ -1,7 +1,7 @@
 import itertools
 
-from .model import Scalar, Dictionary, List, Variable, Tuple
-from .exceptions import MergeException
+from ansiblevarchecker.jinja.model import Scalar, Dictionary, List, Variable, Tuple
+from ansiblevarchecker.jinja.exceptions import MergeException
 from six.moves import zip_longest
 
 def merge(first, second, custom_merger=None):

@@ -1,4 +1,4 @@
-from .scope import ErrorRecord, Scope
+from ansiblevarchecker.scope import ErrorRecord, Scope
 from ansible.parsing.dataloader import DataLoader
 from ansible.playbook import Playbook
 from ansible.inventory.manager import InventoryManager
@@ -9,8 +9,8 @@ from ansible.playbook.role.include import RoleInclude
 from ansible.playbook.role import Role
 from ansible.playbook.block import Block
 from ansible.utils.sentinel import Sentinel
-from .jinja.core import infer
-from .jinja.model import Dictionary
+from ansiblevarchecker.jinja.core import infer
+from ansiblevarchecker.jinja.model import Dictionary
 
 PROPERTIES = [
   'failed_when',
@@ -83,8 +83,8 @@ class PlaybookParser(object):
     if play.get_name() not in self.scopes:
       self.scopes[play.get_name()] = Scope()
     scope = self.scopes[play.get_name()]
-    self._process_set_fact_args_jinja(scope, play.get_vars(), other_scope='play var, ')
-    self._process_set_fact_args(scope, play.get_vars(), other_scope='play var, ')
+    self._process_set_fact_args_jinja(scope, play.get_vars(), None, other_scope='play var, ')
+    self._process_set_fact_args(scope, play.get_vars(), None, other_scope='play var, ')
     flush_block = Block.load(
       data={'meta': 'flush_handlers'},
       play=play,
@@ -143,11 +143,14 @@ class PlaybookParser(object):
           if block.has_tasks():
             self._process_block(scope, block.block)
       elif action in C._ACTION_IMPORT_PLAYBOOK:
-        self.errors.append(ErrorRecord('Playbook include not implemented yet', task, self.current_play, self.playbook, role=task._role))
+        task_role = task._role if task is not None else None
+        self.errors.append(ErrorRecord('Playbook include not implemented yet', task, self.current_play, self.playbook, role=task_role))
       elif action in C._ACTION_INCLUDE_VARS:
-        self.errors.append(ErrorRecord('Var include not implemented yet', task, self.current_play, self.playbook, role=task._role))
+        task_role = task._role if task is not None else None
+        self.errors.append(ErrorRecord('Var include not implemented yet', task, self.current_play, self.playbook, role=task_role))
       elif action in C._ACTION_INCLUDE:
-        self.errors.append(ErrorRecord('Includes not supported', task, self.current_play, self.playbook, role=task._role))
+        task_role = task._role if task is not None else None
+        self.errors.append(ErrorRecord('Includes not supported', task, self.current_play, self.playbook, role=task_role))
 
   def _process_task_attr(self, task_scope, task):
     for attr, attr_value in task._attributes.items():
@@ -176,10 +179,12 @@ class PlaybookParser(object):
             self._process_args(task_scope, attr_value, task)
         elif attr == 'register':
           if task_scope.is_magic(attr_value):
-            self.errors.append(ErrorRecord('Registered var: ' + attr_value + ' is a reserved magic variable', task, self.current_play, self.playbook, role=task._role))
+            task_role = task._role if task is not None else None
+            self.errors.append(ErrorRecord('Registered var: ' + attr_value + ' is a reserved magic variable', task, self.current_play, self.playbook, role=task_role))
           task_scope.add_variable(attr_value, 'registered')
         elif attr not in IGNORED:
-          self.errors.append(ErrorRecord('Unknown attr, ' + attr, task, self.current_play, self.playbook, role=task._role))
+          task_role = task._role if task is not None else None
+          self.errors.append(ErrorRecord('Unknown attr, ' + attr, task, self.current_play, self.playbook, role=task_role))
 
   def _process_args(self, scope, args, task, other_scope=None, action='used'):
     for arg, arg_value in args.items():
@@ -209,18 +214,20 @@ class PlaybookParser(object):
       if isinstance(arg_value, dict):
         temp = list(trail)
         temp.append(arg)
-        self._process_set_fact_args(scope, arg_value, task, trail=temp)
+        self._process_set_fact_args(scope, arg_value, task, other_scope=other_scope, trail=temp)
       else:
         if len(trail) == 0:
           if scope.is_magic(arg):
-            self.errors.append(ErrorRecord('Set fact var: ' + arg + ' is a reserved magic variable', task, self.current_play, self.playbook, role=task._role))
+            task_role = task._role if task is not None else None
+            self.errors.append(ErrorRecord('Set fact var: ' + arg + ' is a reserved magic variable', task, self.current_play, self.playbook, role=task_role, other_scope=other_scope))
           scope.add_variable(arg, 'changed')
         else:
           temp = list(trail)
           temp.append(arg)
           name = temp.pop(0)
           if scope.is_magic(name):
-            self.errors.append(ErrorRecord('Set fact var: ' + name + ' is a reserved magic variable', task, self.current_play, self.playbook, role=task._role))
+            task_role = task._role if task is not None else None
+            self.errors.append(ErrorRecord('Set fact var: ' + name + ' is a reserved magic variable', task, self.current_play, self.playbook, role=task_role, other_scope=other_scope))
           scope.add_attribute(name, temp, 'changed')
 
   def process(self):

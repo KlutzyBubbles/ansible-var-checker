@@ -1,7 +1,7 @@
 from six import iteritems
-from .config import default_config
-from .mergers import merge
-from .model import Dictionary, Variable
+from ansiblevarchecker.jinja.config import default_config
+from ansiblevarchecker.jinja.mergers import merge
+from ansiblevarchecker.jinja.model import Dictionary, Variable
 from six.moves import zip
 
 class Macro(object):

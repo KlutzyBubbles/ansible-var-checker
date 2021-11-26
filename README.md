@@ -1,4 +1,4 @@
-# ansible-var-checker
+# ansiblevarchecker
 
 [![codecov](https://codecov.io/gh/KlutzyBubbles/ansible-var-checker/branch/main/graph/badge.svg?token=NKQROPA7NT)](https://codecov.io/gh/KlutzyBubbles/ansible-var-checker)
 

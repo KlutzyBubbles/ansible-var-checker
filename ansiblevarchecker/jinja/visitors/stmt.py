@@ -1,16 +1,16 @@
 import functools
 
 from jinja2 import nodes, Environment, PackageLoader
-from ..config import default_config
+from ansiblevarchecker.jinja.config import default_config
 
-from ..model import Scalar, Dictionary, List, Variable, Tuple
-from ..macro import Macro
-from ..mergers import merge, merge_many
-from ..exceptions import InvalidExpression
+from ansiblevarchecker.jinja.model import Scalar, Dictionary, List, Variable, Tuple
+from ansiblevarchecker.jinja.macro import Macro
+from ansiblevarchecker.jinja.mergers import merge, merge_many
+from ansiblevarchecker.jinja.exceptions import InvalidExpression
 from six import iteritems
 from six.moves import zip, zip_longest
-from .expr import Context, visit_expr
-from .util import visit_many
+from ansiblevarchecker.jinja.visitors.expr import Context, visit_expr
+from ansiblevarchecker.jinja.visitors.util import visit_many
 
 stmt_visitors = {}
 

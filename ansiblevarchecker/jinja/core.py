@@ -1,8 +1,8 @@
 import jinja2
 
-from .config import Config
-from .model import Dictionary
-from .visitors import visit
+from ansiblevarchecker.jinja.config import Config
+from ansiblevarchecker.jinja.model import Dictionary
+from ansiblevarchecker.jinja.visitors import visit
 from six import iteritems
 
 def parse(template, jinja2_env=None):
