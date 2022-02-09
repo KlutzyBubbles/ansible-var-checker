@@ -1,7 +1,7 @@
 # coding: utf-8
-from avc.jinja.config import Config
-from avc.jinja.core import infer
-from avc.jinja.model import Dictionary, Scalar, Variable
+from ansiblevarchecker.jinja.config import Config
+from ansiblevarchecker.jinja.core import infer
+from ansiblevarchecker.jinja.model import Dictionary, Scalar, Variable
 
 
 def test_1():

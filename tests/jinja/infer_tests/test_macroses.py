@@ -2,11 +2,11 @@
 import pytest
 from jinja2 import nodes
 
-from avc.jinja.core import parse, infer
-from avc.jinja.visitors.stmt import visit_macro
-from avc.jinja.exceptions import MergeException, InvalidExpression
-from avc.jinja.model import Dictionary, Scalar
-from avc.jinja.macro import Macro
+from ansiblevarchecker.jinja.core import parse, infer
+from ansiblevarchecker.jinja.visitors.stmt import visit_macro
+from ansiblevarchecker.jinja.exceptions import MergeException, InvalidExpression
+from ansiblevarchecker.jinja.model import Dictionary, Scalar
+from ansiblevarchecker.jinja.macro import Macro
 
 
 def test_macro_visitor_1():

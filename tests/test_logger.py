@@ -1,6 +1,6 @@
 import pytest
 import logging
-from avc.logger import IndentedLoggerAdapter
+from ansiblevarchecker.logger import IndentedLoggerAdapter
 
 def test_adjust():
     logging.basicConfig(format='%(message)s', level=logging.DEBUG)

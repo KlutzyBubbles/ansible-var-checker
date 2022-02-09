@@ -50,8 +50,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'ansiblevarchecker = ansiblevarchecker:main',
-            'avc = ansiblevarchecker:main'
+            'ansiblevarchecker = ansiblevarchecker:main'
         ]
     }
 )

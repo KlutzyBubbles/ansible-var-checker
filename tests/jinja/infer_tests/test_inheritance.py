@@ -2,9 +2,9 @@
 import pytest
 from jinja2 import PackageLoader, Environment
 
-from avc.jinja.config import Config
-from avc.jinja.core import infer
-from avc.jinja.model import Dictionary, Scalar
+from ansiblevarchecker.jinja.config import Config
+from ansiblevarchecker.jinja.core import infer
+from ansiblevarchecker.jinja.model import Dictionary, Scalar
 
 @pytest.fixture
 def env():

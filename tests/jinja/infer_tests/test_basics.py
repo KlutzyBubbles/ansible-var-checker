@@ -1,10 +1,10 @@
 # coding: utf-8
 import pytest
-from avc.jinja.config import Config
+from ansiblevarchecker.jinja.config import Config
 
-from avc.jinja.core import infer
-from avc.jinja.exceptions import MergeException, UnexpectedExpression
-from avc.jinja.model import List, Dictionary, Scalar, Tuple, Variable
+from ansiblevarchecker.jinja.core import infer
+from ansiblevarchecker.jinja.exceptions import MergeException, UnexpectedExpression
+from ansiblevarchecker.jinja.model import List, Dictionary, Scalar, Tuple, Variable
 
 def test_basics_1():
     template = '''
