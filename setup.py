@@ -20,6 +20,7 @@ setup(
     version=__version__,
     description='Variable checker for ansible playbooks',
     long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
     author='KlutzyBubbles',
     author_email='LTzilantois@gmail.com',
     url='https://github.com/KlutzyBubbles/ansible-var-checker',

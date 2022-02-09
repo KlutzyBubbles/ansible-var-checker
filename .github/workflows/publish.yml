@@ -1,7 +1,11 @@
 name: Publish to PyPi
 on:
-  release:
-    types: [created]
+  push:
+    branches:
+      - master
+    tags:
+      - v*
+  pull_request:
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
@@ -35,3 +39,12 @@ jobs:
       uses: pypa/gh-action-pypi-publish@master
       with:
         password: ${{ secrets.PYPI_API_TOKEN }}
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        draft: true
+        files: |
+          dist/**/*
