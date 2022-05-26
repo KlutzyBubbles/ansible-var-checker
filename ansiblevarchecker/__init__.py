@@ -1,7 +1,7 @@
 # Contains information such as version, author etc
 
 __title__ = 'ansiblevarchecker'
-__version__ = '0.0.1.post1'
+__version__ = '0.0.2'
 __author__ = 'KlutzyBubbles'
 __version_info__ = tuple(int(i) for i in __version__.split('.'))
 
